@@ -1,23 +1,25 @@
 import { evidenceCatalog } from "../evidence/catalog";
 import type { SourceId } from "../data-sources/DataSourceAdapter";
+import { emptyBoard, validateBoard, type CaseBoard } from "../board/caseBoard";
 
 export const SAVE_KEY = "null-case:case-001:investigation";
 export interface QueryHistoryEntry { sourceId: SourceId; query: string; }
 export interface InvestigationSave {
-  schemaVersion: 1;
+  schemaVersion: 2;
+  board: CaseBoard;
   caseId: "case-001";
   caseSchemaVersion: 1;
   discoveredIds: string[];
   evidenceIds: string[];
   history: QueryHistoryEntry[];
 }
-export const emptySave = (): InvestigationSave => ({ schemaVersion: 1, caseId: "case-001", caseSchemaVersion: 1, discoveredIds: [], evidenceIds: [], history: [] });
+export const emptySave = (): InvestigationSave => ({ schemaVersion: 2, caseId: "case-001", caseSchemaVersion: 1, discoveredIds: [], evidenceIds: [], history: [], board: emptyBoard() });
 const sources = ["hotel", "access", "camera", "payment", "facility", "staff"];
 const object = (value: unknown): value is Record<string, unknown> => !!value && typeof value === "object" && !Array.isArray(value);
 
-/** Version boundary: there was no persisted format before M03. Never guess at future formats. */
+/** M03 v1 migrates to v2 with an empty board, preserving evidence and history. */
 export function migrateSave(value: unknown): InvestigationSave {
-  if (!object(value) || value.schemaVersion !== 1 || value.caseId !== "case-001" || value.caseSchemaVersion !== 1) throw new Error("この保存データの事件またはバージョンには対応していません。");
+  if (!object(value) || ![1, 2].includes(Number(value.schemaVersion)) || typeof value.schemaVersion !== "number" || value.caseId !== "case-001" || value.caseSchemaVersion !== 1) throw new Error("この保存データの事件またはバージョンには対応していません。");
   const readIds = (value: unknown): string[] => {
     if (!Array.isArray(value) || value.length > evidenceCatalog.size || value.some((id) => typeof id !== "string" || !evidenceCatalog.has(id))) throw new Error("保存された証拠IDが不正です。");
     return [...new Set(value as string[])];
@@ -26,7 +28,8 @@ export function migrateSave(value: unknown): InvestigationSave {
   const evidenceIds = readIds(value.evidenceIds);
   if (evidenceIds.some((id) => !discoveredIds.includes(id))) throw new Error("未発見の証拠を含む保存データです。");
   if (!Array.isArray(value.history) || value.history.length > 100 || value.history.some((entry) => !object(entry) || !sources.includes(String(entry.sourceId)) || typeof entry.query !== "string" || entry.query.length > 10000)) throw new Error("保存された検索履歴が不正です。");
-  return { ...emptySave(), discoveredIds, evidenceIds, history: value.history.map((entry) => ({ sourceId: entry.sourceId as SourceId, query: entry.query as string })) };
+  const board = value.schemaVersion === 1 ? emptyBoard() : validateBoard(value.board, evidenceIds);
+  return { ...emptySave(), discoveredIds, evidenceIds, board, history: value.history.map((entry) => ({ sourceId: entry.sourceId as SourceId, query: entry.query as string })) };
 }
 
 export function decodeSave(raw: string): InvestigationSave {

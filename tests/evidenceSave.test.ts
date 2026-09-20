@@ -43,7 +43,7 @@ describe("versioned investigation saves", () => {
     expect(save.discoveredIds).toEqual([id]);
     expect(emptySave().discoveredIds).toEqual([]);
   });
-  it.each([null, [], {}, { ...emptySave(), schemaVersion: 2 }, { ...emptySave(), caseId: "case-002" },
+  it.each([null, [], {}, { ...emptySave(), schemaVersion: 999 }, { ...emptySave(), caseId: "case-002" },
     { ...emptySave(), caseSchemaVersion: 2 }, { ...emptySave(), evidenceIds: [id] },
     { ...emptySave(), discoveredIds: ["unknown"] }, { ...emptySave(), history: [{ sourceId: "bad", query: "x" }] },
     { ...emptySave(), history: [{ sourceId: "hotel", query: 5 }] },

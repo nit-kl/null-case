@@ -15,6 +15,7 @@ import { PaymentAdapter } from "@/game/data-sources/PaymentAdapter";
 import { StaffAdapter } from "@/game/data-sources/StaffAdapter";
 import { SourceFilters } from "./SourceFilters";
 import { SourceViews } from "./SourceViews";
+import { CaseBoard } from "./CaseBoard";
 
 const adapters: Record<SourceId, DataSourceAdapter> = { hotel: new HotelAdapter(), access: new AccessAdapter(), camera: new CameraAdapter(), payment: new PaymentAdapter(), facility: new FacilityAdapter(), staff: new StaffAdapter() };
 
@@ -142,6 +143,7 @@ export function InvestigationDesk() {
         </aside>
       </section>
 
+      {ready && <CaseBoard board={save.board} evidence={evidence} onChange={(board) => setSave((current) => ({ ...current, board }))} />}
       <footer><span>SYSTEM ONLINE</span><span>HOTEL ARGOS / 2026.10.14 / 23:41</span><button onClick={() => setBriefingOpen(true)}>事件概要</button></footer>
 
       {briefingOpen && <div className="modalBackdrop"><section className="briefing"><small>INVESTIGATION BRIEF / 001</small><h1>存在しない404号室</h1><p>高級ホテル「ARGOS」の404号室で男性の遺体が発見された。しかし部屋マスタには404号室が存在しない。</p><p className="quote">「データがないことは、何も起きなかった証明ではない。」</p><button onClick={() => setBriefingOpen(false)}>捜査を開始する</button></section></div>}
