@@ -39,6 +39,11 @@ test("search to resolution with network retry and persisted ending", async ({ pa
   await page.reload(); await page.getByRole("button", { name: "捜査を開始する" }).click();
   await theory.locator(".theoryHistory summary").click();
   await expect(theory.locator(".evaluationResult")).toContainText("CASE 001 解決");
+  await page.getByRole("button", { name: /^人物との会話へ/ }).click();
+  const scene = page.getByRole("region", { name: "人物との会話" });
+  await expect(scene.getByRole("heading", { level: 1 })).toHaveText("夜の記録");
+  await scene.getByRole("button", { name: "次の会話" }).click();
+  await expect(scene.locator(".spokenLine")).toContainText(solution.ending.body);
 });
 
 test("evaluation API validates inputs and separates wrong answers from insufficient evidence", async ({ request }) => {

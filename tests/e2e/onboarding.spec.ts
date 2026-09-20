@@ -2,16 +2,15 @@ import { expect, test } from "@playwright/test";
 
 test("intro dialogue leads through real searches to first evidence and free investigation", async ({ page }) => {
   await page.goto("/");
-  const dialog = page.getByRole("dialog");
-  await expect(dialog.locator(".dialogueText")).toContainText("データ分析官");
+  const dialog = page.getByRole("region", { name: "人物との会話" });
+  await expect(dialog.locator(".spokenLine")).toContainText("緊急回線");
   await page.screenshot({ path: test.info().outputPath("intro.png") });
   await dialog.getByRole("button", { name: "次の会話" }).click();
-  await expect(dialog.locator(".dialogueText")).toContainText("通報と記録が食い違っています");
+  await expect(dialog.locator(".spokenLine")).toContainText("支配人の神代");
   await dialog.getByRole("button", { name: "前の会話" }).click();
-  await expect(dialog.locator(".dialogueText")).toContainText("データ分析官");
+  await expect(dialog.locator(".spokenLine")).toContainText("緊急回線");
   await dialog.getByText("会話バックログ", { exact: true }).click();
-  await expect(dialog.locator(".dialogueBacklog li")).toHaveCount(2);
-  for (let i = 0; i < 3; i++) await dialog.getByRole("button", { name: "次の会話" }).click();
+  await expect(dialog.locator(".characterBacklog li")).toHaveCount(1);
   await dialog.getByRole("button", { name: "捜査を開始する" }).click();
   const guide = page.getByRole("region", { name: "はじめての捜査ガイド" });
   await guide.getByRole("button", { name: "部屋の検索を準備" }).click();
@@ -37,7 +36,7 @@ test("intro dialogue leads through real searches to first evidence and free inve
   await expect(guide).toContainText("最初の証拠を登録しました");
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.getByRole("button", { name: "事件概要", exact: true }).click();
-  await expect(dialog.locator(".dialogueText")).toContainText("データ分析官");
+  await expect(page.getByRole("dialog").locator(".dialogueText")).toContainText("データ分析官");
 });
 
 test("skipping and rereading received communications preserve read semantics", async ({ page }) => {

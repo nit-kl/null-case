@@ -2,6 +2,9 @@ import { test, expect } from "@playwright/test";
 
 test("briefing contains keyboard focus and restores it; navigation reaches investigation sections", async ({ page }) => {
   await page.goto("/");
+  await expect(page.getByRole("region", { name: "人物との会話" }).getByRole("heading", { level: 1 })).toBeFocused();
+  await page.getByRole("button", { name: "捜査を開始する" }).click();
+  await page.getByRole("button", { name: "事件概要", exact: true }).click();
   const dialog = page.getByRole("dialog");
   await expect(dialog).toBeVisible();
   await expect(dialog.getByRole("button", { name: "次の会話" })).toBeFocused();
@@ -10,7 +13,7 @@ test("briefing contains keyboard focus and restores it; navigation reaches inves
   expect(await page.evaluate(() => document.activeElement === document.body || !!document.activeElement?.closest("dialog"))).toBe(true);
   await page.keyboard.press("Escape");
   await expect(dialog).not.toBeVisible();
-  await expect(page.locator("#investigation")).toBeFocused();
+  await expect(page.getByRole("button", { name: "事件概要", exact: true })).toBeFocused();
 
   const navigation = page.getByRole("navigation", { name: "捜査画面の移動" });
   for (const [name, id] of [["登録証拠", "evidence"], ["通信ログ", "communications"], ["ケースボード", "case-board"], ["事件モデル", "case-theory"], ["データ検索", "investigation"]]) {
@@ -44,6 +47,8 @@ test("briefing fits short screens and respects reduced motion", async ({ page })
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.setViewportSize({ width: 390, height: 320 });
   await page.goto("/");
+  await page.getByRole("button", { name: "捜査を開始する" }).click();
+  await page.getByRole("button", { name: "事件概要", exact: true }).click();
   const dialog = page.getByRole("dialog");
   await expect(dialog).toBeVisible();
   expect(await dialog.evaluate((element) => getComputedStyle(element).animationName)).toBe("none");

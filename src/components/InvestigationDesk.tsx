@@ -25,12 +25,17 @@ import { useTerminalAudio } from "@/game/audio/useTerminalAudio";
 import { useOnboarding } from "@/game/story/useOnboarding";
 import { InvestigationGuide } from "./InvestigationGuide";
 import { tutorialStep } from "@/game/story/onboarding";
+import { availableScenes } from "@/game/story/conversations";
+import { useConversations } from "@/game/story/useConversations";
+import { StoryRoom } from "./StoryRoom";
 
 const adapters: Record<SourceId, DataSourceAdapter> = { hotel: new HotelAdapter(), access: new AccessAdapter(), camera: new CameraAdapter(), payment: new PaymentAdapter(), facility: new FacilityAdapter(), staff: new StaffAdapter() };
 
 export function InvestigationDesk() {
   const audio = useTerminalAudio();
   const tutorial = useOnboarding();
+  const conversations = useConversations();
+  const [mode, setMode] = useState<"story" | "investigation">("story");
   const guideRef = useRef<HTMLDivElement>(null);
   const consoleRef = useRef<HTMLDivElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
@@ -50,12 +55,12 @@ export function InvestigationDesk() {
   const previousGuideStep = useRef<string | null>(null);
   useEffect(() => {
     if (!ready || !tutorial.ready) return;
-    if (previousGuideStep.current !== null && previousGuideStep.current !== guideStep && !tutorial.state.dismissed) {
+    if (mode === "investigation" && previousGuideStep.current !== null && previousGuideStep.current !== guideStep && !tutorial.state.dismissed) {
       guideRef.current?.focus();
       guideRef.current?.scrollIntoView({ block: "start" });
     }
     previousGuideStep.current = guideStep;
-  }, [ready, tutorial.ready, tutorial.state.dismissed, guideStep]);
+  }, [ready, tutorial.ready, tutorial.state.dismissed, guideStep, mode]);
   const previous = useRef<{ evidence: number; messages: number } | null>(null);
   useEffect(() => {
     if (!ready) return;
@@ -67,7 +72,20 @@ export function InvestigationDesk() {
     previous.current = next;
   }, [ready, save.evidenceIds.length, save.story.deliveredIds.length, audio.play]);
   const evidence = save.evidenceIds.map((id) => evidenceCatalog.get(id)!);
-  const [briefingOpen, setBriefingOpen] = useState(true);
+  const [briefingOpen, setBriefingOpen] = useState(false);
+  const ending = save.theory.submissions.find((entry) => entry.evaluation?.outcome === "supported")?.evaluation?.ending;
+  const scenes = availableScenes(save.evidenceIds, save.theory.submissions.length, !!ending);
+  const unreadScenes = scenes.filter((scene) => !conversations.state.progress[scene.id]?.completed);
+  const showStory = () => {
+    const latest = unreadScenes.at(-1);
+    if (latest) conversations.setState((current) => ({ ...current, active: latest.id }));
+    setMode("story");
+  };
+  const showInvestigation = (source?: SourceId) => {
+    if (source) switchSource(source);
+    setMode("investigation");
+    requestAnimationFrame(() => focusArea(document.getElementById("investigation")));
+  };
   const switchSource = (id: SourceId) => {
     setSourceId(id);
     setQuery(adapters[id].presets[0]);
@@ -118,6 +136,14 @@ export function InvestigationDesk() {
         <div className="caseMeta"><span className="pulse" /> CASE 001 <b>存在しない404号室</b></div>
         <div className="clearance">CLEARANCE 04</div>
       </header>
+      <nav className="phaseNavigation" aria-label="場面の切替">
+        <button aria-pressed={mode === "story"} onClick={showStory}>会話パート <span>{unreadScenes.length} 件未読</span></button>
+        <button aria-pressed={mode === "investigation"} onClick={() => showInvestigation()}>捜査パート <span>記録を検索・照合する</span></button>
+      </nav>
+      {mode === "story" && (ready && conversations.ready ? <StoryRoom scenes={scenes} state={conversations.state} onChange={conversations.setState} onInvestigate={showInvestigation} notice={conversations.notice} ending={ending} /> : <p role="status">会話を準備しています…</p>)}
+      <div className="investigationMode" hidden={mode !== "investigation"}>
+      <div className="investigationHeading"><div><small>INVESTIGATION / 捜査パート</small><p>記録を調べ、証拠を登録する時間です。</p></div><button onClick={showStory}>人物との会話へ {unreadScenes.length > 0 ? `（未読 ${unreadScenes.length}）` : ""}</button></div>
+      <p className="conversationNotice" role="status">{unreadScenes.some((scene) => scene.id !== "arrival") ? "新しい聞き取りが届いています。人物との会話から続きを確認できます。" : "会話と捜査は、上部の切替からいつでも行き来できます。"}</p>
       <nav className="deskNavigation" aria-label="捜査画面の移動">
         {[["investigation", "データ検索"], ["evidence", "登録証拠"], ["communications", "通信ログ"], ["case-board", "ケースボード"], ["case-theory", "事件モデル"]].map(([id, label]) => <a key={id} href={`#${id}`} onClick={() => document.getElementById(id)?.focus()}>{label}</a>)}
         <AudioControls audio={audio} />
@@ -202,6 +228,7 @@ export function InvestigationDesk() {
       <footer><span>SYSTEM ONLINE</span><span>HOTEL ARGOS / 2026.10.14 / 23:41</span><button onClick={() => setBriefingOpen(true)}>事件概要</button></footer>
 
       <BriefingDialog open={briefingOpen} onClose={() => setBriefingOpen(false)} />
+      </div>
     </main>
   );
 }
