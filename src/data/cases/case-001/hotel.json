@@ -1,0 +1,32 @@
+{
+  "tables": [
+    {
+      "name": "rooms",
+      "label": "部屋マスタ",
+      "rows": [
+        { "room_number": 401, "floor": 4, "type": "Deluxe", "status": "occupied" },
+        { "room_number": 402, "floor": 4, "type": "Twin", "status": "vacant" },
+        { "room_number": 403, "floor": 4, "type": "Suite", "status": "maintenance" },
+        { "room_number": 405, "floor": 4, "type": "Deluxe", "status": "occupied" },
+        { "room_number": 406, "floor": 4, "type": "Twin", "status": "occupied" }
+      ]
+    },
+    {
+      "name": "reservations",
+      "label": "宿泊予約",
+      "rows": [
+        { "reservation_id": "R-1014-31", "guest_name": "藤堂 玲司", "room_number": 401, "check_in": "2026-10-14 18:42", "status": "checked_in" },
+        { "reservation_id": "R-1014-32", "guest_name": "加賀美 透", "room_number": 405, "check_in": "2026-10-14 20:03", "status": "checked_in" },
+        { "reservation_id": "R-1014-33", "guest_name": "相馬 由佳", "room_number": 406, "check_in": "2026-10-14 21:11", "status": "checked_in" }
+      ]
+    },
+    {
+      "name": "room_notes",
+      "label": "運用メモ",
+      "rows": [
+        { "note_id": "N-882", "room_number": 404, "created_at": "2026-10-14 09:04", "note": "長期停止区画。支配人承認なしで入室禁止", "author": "SYSTEM" },
+        { "note_id": "N-891", "room_number": 403, "created_at": "2026-10-14 14:22", "note": "空調点検中", "author": "施設管理" }
+      ]
+    }
+  ]
+}
