@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createEvidence } from "@/game/evidence/createEvidence";
 import { discoverEvidence, evidenceCatalog, registerEvidence } from "@/game/evidence/catalog";
 import { recordSearch } from "@/game/save/investigationSave";
@@ -17,12 +17,16 @@ import { SourceFilters } from "./SourceFilters";
 import { SourceViews } from "./SourceViews";
 import { CaseBoard } from "./CaseBoard";
 import { StoryLog } from "./StoryLog";
-import { briefing, currentObjective, markStoryRead } from "@/game/story/storyEngine";
+import { currentObjective, markStoryRead } from "@/game/story/storyEngine";
 import { CaseTheory } from "./CaseTheory";
+import { BriefingDialog } from "./BriefingDialog";
+import { AudioControls } from "./AudioControls";
+import { useTerminalAudio } from "@/game/audio/useTerminalAudio";
 
 const adapters: Record<SourceId, DataSourceAdapter> = { hotel: new HotelAdapter(), access: new AccessAdapter(), camera: new CameraAdapter(), payment: new PaymentAdapter(), facility: new FacilityAdapter(), staff: new StaffAdapter() };
 
 export function InvestigationDesk() {
+  const audio = useTerminalAudio();
   const [sourceId, setSourceId] = useState<SourceId>("hotel");
   const adapter = adapters[sourceId];
   const [query, setQuery] = useState(adapter.presets[0]);
@@ -31,7 +35,19 @@ export function InvestigationDesk() {
   const [startTime, setStartTime] = useState("22:00");
   const [endTime, setEndTime] = useState("23:00");
   const [error, setError] = useState("");
+  const [announcement, setAnnouncement] = useState({ text: "", sequence: 0 });
+  const announce = (text: string) => setAnnouncement((current) => ({ text, sequence: current.sequence + 1 }));
   const { save, setSave, ready, status: saveStatus } = useInvestigationSave();
+  const previous = useRef<{ evidence: number; messages: number } | null>(null);
+  useEffect(() => {
+    if (!ready) return;
+    const next = { evidence: save.evidenceIds.length, messages: save.story.deliveredIds.length };
+    if (previous.current) {
+      if (next.messages > previous.current.messages) audio.play("message");
+      else if (next.evidence > previous.current.evidence) audio.play("evidence");
+    }
+    previous.current = next;
+  }, [ready, save.evidenceIds.length, save.story.deliveredIds.length, audio.play]);
   const evidence = save.evidenceIds.map((id) => evidenceCatalog.get(id)!);
   const [briefingOpen, setBriefingOpen] = useState(true);
   const switchSource = (id: SourceId) => {
@@ -47,6 +63,8 @@ export function InvestigationDesk() {
       const input = sourceId === "facility" ? `room:${room} AND metric:power_kw AND timestamp:[${startTime} TO ${endTime}]` : query;
       const next = adapter.execute(input);
       setResult(next);
+      audio.play("search");
+      announce(`${adapter.label}：検索結果 ${next.rows.length} 件。`);
       setSave((current) => recordSearch(current, sourceId, input, discoverEvidence(next)));
       setError("");
     } catch (caught) {
@@ -66,6 +84,8 @@ export function InvestigationDesk() {
     try {
       const found = adapters.staff.execute(next);
       setResult(found);
+      audio.play("search");
+      announce(`STAFF DB：検索結果 ${found.rows.length} 件。`);
       setSave((current) => recordSearch(current, "staff", next, discoverEvidence(found)));
       setError("");
     }
@@ -79,8 +99,13 @@ export function InvestigationDesk() {
         <div className="caseMeta"><span className="pulse" /> CASE 001 <b>存在しない404号室</b></div>
         <div className="clearance">CLEARANCE 04</div>
       </header>
+      <nav className="deskNavigation" aria-label="捜査画面の移動">
+        {[["investigation", "データ検索"], ["evidence", "登録証拠"], ["communications", "通信ログ"], ["case-board", "ケースボード"], ["case-theory", "事件モデル"]].map(([id, label]) => <a key={id} href={`#${id}`} onClick={() => document.getElementById(id)?.focus()}>{label}</a>)}
+        <AudioControls audio={audio} />
+      </nav>
+      <div className="srOnly" role="status" aria-atomic="true"><span key={announcement.sequence}>{announcement.text}</span></div>
 
-      <section className="workspace">
+      <section className="workspace" id="investigation" tabIndex={-1} aria-label="データ検索">
         <aside className="sources panel">
           <p className="eyebrow">DATA SOURCES</p>
           <div className="sourceList">{Object.values(adapters).map((source) => <button key={source.id} aria-pressed={sourceId === source.id} onClick={() => switchSource(source.id)} className={`source ${sourceId === source.id ? "active" : ""}`}><span>{source.label[0]}</span><div>{source.label}<small>CONNECTED</small></div></button>)}
@@ -128,7 +153,7 @@ export function InvestigationDesk() {
           </div>
         </section>
 
-        <aside className="evidence panel">
+        <aside className="evidence panel" id="evidence" tabIndex={-1} aria-label="登録証拠">
           <div className="panelTitle"><span>EVIDENCE</span><span aria-live="polite">{evidence.length} 件</span></div>
           <p className="saveStatus" role="status">{saveStatus}</p>
           {evidence.length === 0 ? <div className="empty compact"><b>EMPTY</b><span>結果行から証拠を登録</span></div> : evidence.map((item) => (
@@ -151,7 +176,7 @@ export function InvestigationDesk() {
       {ready && <CaseTheory theory={save.theory} evidence={evidence} onChange={(theory) => setSave((current) => ({ ...current, theory }))} onEvaluation={(id, evaluation) => setSave((current) => ({ ...current, theory: { ...current.theory, submissions: current.theory.submissions.map((entry) => entry.id === id ? { ...entry, evaluation } : entry) } }))} />}
       <footer><span>SYSTEM ONLINE</span><span>HOTEL ARGOS / 2026.10.14 / 23:41</span><button onClick={() => setBriefingOpen(true)}>事件概要</button></footer>
 
-      {briefingOpen && <div className="modalBackdrop"><section className="briefing"><small>INVESTIGATION BRIEF / 001</small><h1>{briefing.title}</h1><p>{briefing.body}</p><p className="quote">{briefing.quote}</p><button onClick={() => setBriefingOpen(false)}>捜査を開始する</button></section></div>}
+      <BriefingDialog open={briefingOpen} onClose={() => setBriefingOpen(false)} />
     </main>
   );
 }

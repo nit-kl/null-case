@@ -146,3 +146,29 @@ summary:focus-visible { outline:2px solid var(--cyan); outline-offset:3px; }
 @media(max-width:700px) { .shell { grid-template-rows:60px auto auto auto 34px; } .caseBoard { margin:0 6px 6px; } .boardConnect { grid-template-columns:minmax(0,1fr); } }
 .shell { grid-template-rows:72px minmax(0,1fr) auto auto auto 38px; }
 @media(max-width:700px) { .shell { grid-template-rows:60px auto auto auto auto 34px; } .caseTheory { margin:0 6px 6px; } .theoryFields { grid-template-columns:minmax(0,1fr); } }
+/* M08: navigation, native modal and keyboard visibility. */
+.audioControls { max-width:100%; padding:10px; font-size:13px; }
+.audioControls > div { display:flex; flex-wrap:wrap; align-items:center; gap:12px; padding-top:12px; }
+.audioControls button { min-height:44px; padding:8px 12px; border:1px solid var(--line); background:var(--panel); }
+.audioControls label { display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+.audioControls input { max-width:100%; min-height:44px; }
+.audioControls p { flex-basis:100%; color:var(--muted); margin:0; line-height:1.7; }
+.shell { grid-template-rows:72px auto minmax(0,1fr) auto auto auto 38px; }
+.srOnly { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; border:0; }
+.deskNavigation { display:flex; flex-wrap:wrap; gap:8px; padding:8px 14px; border-bottom:1px solid var(--line); }
+.deskNavigation a { display:flex; align-items:center; min-height:44px; padding:8px 12px; color:var(--cyan); font-size:13px; text-underline-offset:4px; }
+a:focus-visible, [tabindex="-1"]:focus-visible { outline:2px solid var(--cyan); outline-offset:-2px; }
+.briefing { color:inherit; max-height:calc(100dvh - 32px); overflow:auto; }
+.briefing::backdrop { background:#020809dc; backdrop-filter:blur(8px); }
+.briefing[open], .evaluationResult { animation:panelAppear 180ms ease-out; }
+@keyframes panelAppear { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:none; } }
+.pin { min-height:32px; padding:6px 10px; }
+.empty { color:var(--muted); }
+@media(max-width:700px) {
+  .shell { grid-template-rows:60px auto auto auto auto auto 34px; }
+  .deskNavigation { gap:4px; padding:6px; }
+  .briefing { padding:24px; }
+}
+@media(prefers-reduced-motion:reduce) {
+  *, *::before, *::after { animation:none !important; transition:none !important; scroll-behavior:auto !important; }
+}

@@ -2,7 +2,7 @@ import { storyEvents, type StoryState } from "@/game/story/storyEngine";
 
 export function StoryLog({ story, onRead }: { story: StoryState; onRead: (id: string) => void }) {
   const unread = story.deliveredIds.filter((id) => !story.readIds.includes(id)).length;
-  return <section className="storyLog panel" aria-label="通信ログ">
+  return <section className="storyLog panel" id="communications" tabIndex={-1} aria-label="通信ログ">
     <div className="panelTitle"><span>COMMUNICATION LOG</span><span role="status">未読 {unread} 件</span></div>
     <div className="storyEntries">{story.deliveredIds.map((id, index) => {
       const event = storyEvents.find((event) => event.id === id)!;
