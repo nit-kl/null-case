@@ -3,9 +3,8 @@ import { test, expect } from "@playwright/test";
 test("briefing contains keyboard focus and restores it; navigation reaches investigation sections", async ({ page }) => {
   await page.goto("/");
   const dialog = page.getByRole("dialog");
-  const start = dialog.getByRole("button", { name: "捜査を開始する" });
   await expect(dialog).toBeVisible();
-  await expect(start).toBeFocused();
+  await expect(dialog.getByRole("button", { name: "次の会話" })).toBeFocused();
   await page.keyboard.press("Shift+Tab");
   await page.keyboard.press("Shift+Tab");
   expect(await page.evaluate(() => document.activeElement === document.body || !!document.activeElement?.closest("dialog"))).toBe(true);
@@ -23,8 +22,8 @@ test("briefing contains keyboard focus and restores it; navigation reaches inves
   const reopen = page.getByRole("button", { name: "事件概要", exact: true });
   await reopen.focus();
   await page.keyboard.press("Enter");
-  await expect(start).toBeFocused();
-  await page.keyboard.press("Enter");
+  await expect(dialog.getByRole("button", { name: "次の会話" })).toBeFocused();
+  await page.keyboard.press("Escape");
   await expect(reopen).toBeFocused();
   expect(await page.evaluate(() => document.body.style.overflow)).toBe("");
 
@@ -51,6 +50,6 @@ test("briefing fits short screens and respects reduced motion", async ({ page })
   const box = await dialog.boundingBox();
   expect(box!.y).toBeGreaterThanOrEqual(0);
   expect(box!.y + box!.height).toBeLessThanOrEqual(320);
-  await page.keyboard.press("Enter");
+  await page.keyboard.press("Escape");
   await expect(dialog).not.toBeVisible();
 });

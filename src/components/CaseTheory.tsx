@@ -20,6 +20,7 @@ export function CaseTheory({ theory, evidence, onChange, onEvaluation }: { theor
     <dt>{label}</dt><dd><p>{draft[id].statement}</p><p>評価用結論：{publicChoices[id].options.find((option) => option.id === draft[id].choiceId)?.label ?? "未選択"}</p><p>根拠：{draft[id].reasoning}</p><ul>{draft[id].evidenceIds.map((evidenceId) => <li key={evidenceId}>{titles.get(evidenceId)}</li>)}</ul></dd>
   </div>)}</dl>;
   return <section className="caseTheory panel" id="case-theory" tabIndex={-1} aria-label="事件モデル">
+    {theory.submissions.length === 0 && <p className="theoryHelp">ここは集めた証拠から結論を提出する場所です。今すぐ埋める必要はありません。捜査が進んだら4項目に推理と根拠を記入し、証拠を割り当てて「提出内容を確認」へ進みます。提出後、履歴から判定を依頼できます。</p>}
     <div className="panelTitle"><span>CASE THEORY</span><span>{theory.submissions.length} 件提出</span></div>
     <p className="theoryHelp">4項目の推理と根拠説明を記入し、それぞれに登録済み証拠を1件以上割り当ててください。下書きは自動保存します。</p>
     <p className="theoryHelp">提出はこのブラウザに保存します。提出履歴の「判定を依頼」で、選んだ結論と証拠をサーバーへ送信します。自由記述は自動採点せず、評価用結論と証拠の組合せを判定します。方法の評価対象は侵入・偽装方法です。</p>

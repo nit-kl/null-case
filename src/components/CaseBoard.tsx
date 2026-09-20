@@ -18,6 +18,7 @@ export function CaseBoard({ board, evidence, onChange }: { board: Board; evidenc
   };
   const selected = (id: string) => board.nodes.some((node) => node.evidenceId === id) ? id : "";
   return <section className="caseBoard panel" id="case-board" tabIndex={-1} aria-label="ケースボード">
+    {board.nodes.length === 0 && <p className="boardHelp">ここは証拠を並べて考える場所です。まず下の登録済み証拠を選んで配置してください。2件配置すると、証拠A・Bを選んで関係や矛盾を接続できます。接続はあなたの仮説として保存されます。</p>}
     <div className="panelTitle"><span>CASE BOARD</span><span>{board.nodes.length} 証拠 / {board.links.length} 接続</span></div>
     <p className="boardHelp">登録した証拠を配置し、あなたの推理を接続してください。移動ボタンで配置を変更できます。同じ位置にある証拠とは場所を交換します。</p>
     {evidence.length === 0 ? <p className="boardHelp">検索結果から証拠を登録すると、ここに配置できます。</p> : <details className="boardPalette" open>

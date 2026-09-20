@@ -22,11 +22,19 @@ import { CaseTheory } from "./CaseTheory";
 import { BriefingDialog } from "./BriefingDialog";
 import { AudioControls } from "./AudioControls";
 import { useTerminalAudio } from "@/game/audio/useTerminalAudio";
+import { useOnboarding } from "@/game/story/useOnboarding";
+import { InvestigationGuide } from "./InvestigationGuide";
+import { tutorialStep } from "@/game/story/onboarding";
 
 const adapters: Record<SourceId, DataSourceAdapter> = { hotel: new HotelAdapter(), access: new AccessAdapter(), camera: new CameraAdapter(), payment: new PaymentAdapter(), facility: new FacilityAdapter(), staff: new StaffAdapter() };
 
 export function InvestigationDesk() {
   const audio = useTerminalAudio();
+  const tutorial = useOnboarding();
+  const guideRef = useRef<HTMLDivElement>(null);
+  const consoleRef = useRef<HTMLDivElement>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
+  const focusArea = (element: HTMLElement | null) => { element?.focus(); element?.scrollIntoView({ block: "start" }); };
   const [sourceId, setSourceId] = useState<SourceId>("hotel");
   const adapter = adapters[sourceId];
   const [query, setQuery] = useState(adapter.presets[0]);
@@ -38,6 +46,16 @@ export function InvestigationDesk() {
   const [announcement, setAnnouncement] = useState({ text: "", sequence: 0 });
   const announce = (text: string) => setAnnouncement((current) => ({ text, sequence: current.sequence + 1 }));
   const { save, setSave, ready, status: saveStatus } = useInvestigationSave();
+  const guideStep = tutorialStep(tutorial.state, save.discoveredIds, save.evidenceIds);
+  const previousGuideStep = useRef<string | null>(null);
+  useEffect(() => {
+    if (!ready || !tutorial.ready) return;
+    if (previousGuideStep.current !== null && previousGuideStep.current !== guideStep && !tutorial.state.dismissed) {
+      guideRef.current?.focus();
+      guideRef.current?.scrollIntoView({ block: "start" });
+    }
+    previousGuideStep.current = guideStep;
+  }, [ready, tutorial.ready, tutorial.state.dismissed, guideStep]);
   const previous = useRef<{ evidence: number; messages: number } | null>(null);
   useEffect(() => {
     if (!ready) return;
@@ -63,6 +81,7 @@ export function InvestigationDesk() {
       const input = sourceId === "facility" ? `room:${room} AND metric:power_kw AND timestamp:[${startTime} TO ${endTime}]` : query;
       const next = adapter.execute(input);
       setResult(next);
+      tutorial.record(next, input);
       audio.play("search");
       announce(`${adapter.label}：検索結果 ${next.rows.length} 件。`);
       setSave((current) => recordSearch(current, sourceId, input, discoverEvidence(next)));
@@ -102,6 +121,7 @@ export function InvestigationDesk() {
       <nav className="deskNavigation" aria-label="捜査画面の移動">
         {[["investigation", "データ検索"], ["evidence", "登録証拠"], ["communications", "通信ログ"], ["case-board", "ケースボード"], ["case-theory", "事件モデル"]].map(([id, label]) => <a key={id} href={`#${id}`} onClick={() => document.getElementById(id)?.focus()}>{label}</a>)}
         <AudioControls audio={audio} />
+        <button className="helpToggle" onClick={() => { tutorial.dismiss(false); requestAnimationFrame(() => focusArea(guideRef.current)); }}>遊び方</button>
       </nav>
       <div className="srOnly" role="status" aria-atomic="true"><span key={announcement.sequence}>{announcement.text}</span></div>
 
@@ -120,7 +140,12 @@ export function InvestigationDesk() {
         </aside>
 
         <section className="consoleColumn">
-          <div className="panel console">
+          {ready && tutorial.ready && !tutorial.state.dismissed && <div ref={guideRef} className="guideAnchor" tabIndex={-1}><InvestigationGuide state={tutorial.state} discovered={save.discoveredIds} registered={save.evidenceIds} notice={tutorial.notice}
+            onPrepare={(text) => { switchSource("hotel"); setQuery(text); focusArea(consoleRef.current); }}
+            onResults={() => focusArea(resultsRef.current)}
+            onDismiss={() => { tutorial.dismiss(true); focusArea(consoleRef.current); }}
+            onAccess={() => { switchSource("access"); tutorial.dismiss(true); focusArea(consoleRef.current); }} /></div>}
+          <div className="panel console" ref={consoleRef} tabIndex={-1} aria-label="検索操作">
             <div className="panelTitle"><span>{adapter.label}</span><span className="status">● SECURE SESSION</span></div>
             {sourceId === "facility" ? <div className="facilityControls">
               <p>電力使用量（kW） · 2026-10-14 / UTC+09:00 · 両端の分を含む</p>
@@ -135,7 +160,7 @@ export function InvestigationDesk() {
             <button className="run" disabled={!ready} onClick={run}>RUN QUERY {(sourceId === "hotel" || sourceId === "access") && <kbd>CTRL ↵</kbd>}</button>
           </div>
 
-          <div className={`panel results ${result && ["facility", "camera", "staff"].includes(result.sourceId) ? "facilityResults" : ""}`}>
+          <div ref={resultsRef} tabIndex={-1} aria-label="検索結果パネル" className={`panel results ${result && ["facility", "camera", "staff"].includes(result.sourceId) ? "facilityResults" : ""}`}>
             <div className="panelTitle"><span>RESULTS</span><span>{result ? `${result.message} ${result.elapsedMs}ms` : "AWAITING QUERY"}</span></div>
             {error && <div className="error" role="alert">{error}</div>}
             {!result && !error && <div className="empty"><b>NO RESULT SET</b><span>クエリを実行して事件記録へアクセスしてください。</span></div>}

@@ -147,6 +147,50 @@ summary:focus-visible { outline:2px solid var(--cyan); outline-offset:3px; }
 .shell { grid-template-rows:72px minmax(0,1fr) auto auto auto 38px; }
 @media(max-width:700px) { .shell { grid-template-rows:60px auto auto auto auto 34px; } .caseTheory { margin:0 6px 6px; } .theoryFields { grid-template-columns:minmax(0,1fr); } }
 /* M08: navigation, native modal and keyboard visibility. */
+.consoleColumn { display:flex; flex-direction:column; }
+.consoleColumn > .console { flex:0 0 350px; }
+.consoleColumn > .results { flex:1 0 320px; min-height:320px; }
+.guideAnchor { flex:none; }
+.investigationGuide { padding:20px; border:1px solid #426d68; background:linear-gradient(120deg,#193432,#0d1b1e); }
+.investigationGuide small { color:#a7c7bf; font-size:12px; line-height:1.7; }
+.investigationGuide h2 { font-size:17px; color:var(--cyan); margin:8px 0; }
+.investigationGuide p { font-size:14px; line-height:1.9; }
+.guideActions { display:flex; flex-wrap:wrap; gap:8px; margin:12px 0; }
+.guideActions button,.helpToggle { min-height:44px; padding:8px 12px; background:#102b29; border:1px solid #426d68; color:var(--cyan); font-size:13px; }
+.briefing.visualNovel { width:min(800px,94vw); padding:0; }
+.novelScene { height:190px; position:relative; overflow:hidden; background:linear-gradient(155deg,#142831,#060b12 70%); border-bottom:1px solid #426d68; }
+.sceneCaption { position:absolute; top:24px; left:28px; color:#d7ac63; font:14px ui-monospace,monospace; letter-spacing:.3em; z-index:1; }
+.sceneCase { position:absolute; bottom:16px; left:28px; color:#8ca9af; font:11px ui-monospace,monospace; letter-spacing:.2em; }
+.hotelFacade { position:absolute; right:10%; top:18px; width:220px; padding:28px; height:210px; transform:skewY(-8deg); display:grid; grid-template-columns:repeat(5,1fr); gap:15px; border:1px solid #375257; background:#101e26; box-shadow:0 0 70px #8aa2aa1a; }
+.hotelFacade span { background:#af986055; border:1px solid #a1946d33; }
+.hotelFacade span:nth-child(3n) { background:#172930; }
+.terminal .hotelFacade { transform:none; border-radius:50%; width:160px; height:160px; top:15px; background:repeating-radial-gradient(circle,transparent 0 18px,#6df6dc22 19px 20px); border-color:#6df6dc77; }
+.terminal .hotelFacade span { visibility:hidden; }
+.novelContent { padding:24px 32px; }
+.novelContent h1 { font-size:21px; margin:0 0 20px; }
+.dialogueText { min-height:140px; border-left:3px solid var(--cyan); padding-left:18px; }
+.dialogueText strong { font-size:13px; color:var(--cyan); }
+.dialogueText p { font-size:16px; color:#e1eae6; line-height:1.9; }
+.dialogueProgress { font-size:11px; }
+.dialogueActions { display:flex; flex-wrap:wrap; gap:8px; }
+.dialogueActions button { width:auto; flex:1 1 auto; min-height:44px; padding:10px 12px; margin:0 0 12px; font-size:13px; }
+.dialogueActions .dialogueNext { background:#21564e; }
+.dialogueActions button:disabled { opacity:.4; cursor:default; }
+.novelContent > small { letter-spacing:normal; line-height:1.7; }
+.dialogueBacklog { margin-top:18px; font-size:13px; }
+.dialogueBacklog ol { padding-left:20px; }
+.dialogueBacklog p { font-size:13px; }
+.storyEntry button { margin:4px; }
+@media(max-width:700px) {
+  .visualNovel { padding:0; }
+  .novelScene { height:130px; }
+  .novelContent { padding:20px; }
+  .dialogueText { min-height:0; }
+  .hotelFacade { right:-30px; opacity:.65; }
+  .investigationGuide { padding:16px; margin-bottom:6px; }
+  .consoleColumn > .results { height:auto; }
+  .consoleColumn > .results .tableWrap { max-height:320px; }
+}
 .audioControls { max-width:100%; padding:10px; font-size:13px; }
 .audioControls > div { display:flex; flex-wrap:wrap; align-items:center; gap:12px; padding-top:12px; }
 .audioControls button { min-height:44px; padding:8px 12px; border:1px solid var(--line); background:var(--panel); }
