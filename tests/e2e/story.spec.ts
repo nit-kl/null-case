@@ -1,0 +1,31 @@
+import { test, expect } from "@playwright/test";
+
+test("messages unlock once, change objectives, and retain read state", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "捜査を開始する" }).click();
+  const log = page.getByRole("region", { name: "通信ログ", exact: true });
+  await expect(log.locator("article")).toHaveCount(1);
+  await expect(log).not.toContainText("異なるソースの記録");
+  await log.getByRole("button", { name: "既読にする", exact: true }).click();
+  await page.getByRole("button", { name: /^Q3:/ }).click();
+  const run = () => page.getByRole("button", { name: /RUN QUERY/ }).click();
+  await run();
+  await expect(log.locator("article")).toHaveCount(2);
+  await expect(page.locator(".objective")).toContainText("運用メモを証拠に登録");
+  await run();
+  await expect(log.locator("article")).toHaveCount(2);
+  await page.getByRole("button", { name: "＋ 証拠化", exact: true }).click();
+  await page.getByRole("button", { name: /ACCESS DB.*CONNECTED/ }).click();
+  await run();
+  await expect(log.locator("article")).toHaveCount(2);
+  await page.getByRole("button", { name: "＋ 証拠化", exact: true }).click();
+  await expect(log.locator("article")).toHaveCount(3);
+  await expect(page.locator(".objective")).toContainText("設備・映像・取引");
+  await expect(log.getByRole("status")).toHaveText("未読 2 件");
+  await page.reload();
+  await page.getByRole("button", { name: "捜査を開始する" }).click();
+  await expect(log.locator("article")).toHaveCount(3);
+  await expect(log.getByRole("button", { name: "既読", exact: true })).toBeDisabled();
+  await expect(log.getByRole("status")).toHaveText("未読 2 件");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});

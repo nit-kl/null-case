@@ -60,6 +60,17 @@ M03では`recordReturned`（検索結果に元レコードが含まれた）だ�
 
 証拠IDはM02からの`E-case-001-{sourceId}-{table}-{recordId}`を維持する。既存HOTELは部屋番号・予約ID・メモID、新規ソースは`_recordId`を使用する。登録には発見済みIDが必要。真相や推理の正誤を表す`supports`は現段階のクライアント用定義に含めない。
 
+## story.json
+
+M05の`story.json`は`schemaVersion`、`caseId`、`briefing`（title/body/quote）、`events`を持つ。各イベントは不変`id`、`sender`、`title`、`body`、`when`、任意の`objective`を定義する。
+
+- `when.type: start`：開始時
+- `when.type: discovered`と`ids`：指定した証拠IDをすべて検索で発見
+- `when.type: registered`と`ids`：指定した証拠IDをすべて登録
+- `when.type: boardLinks`と`minimum`：ボードの接続数が閾値以上
+
+条件は列挙した型だけを解釈し、任意式・SQLは実行しない。同時成立した通信はJSONの配列順で受信する。目標は受信済みイベントのうち配列上で最後の`objective`を使用し、過去の手掛かりを後から発見しても後退しない。既読は進行条件にしない。通信データに真相の答え合わせ情報を含めない。
+
 ## solution.json の扱い
 
 製品版では答え合わせロジックをサーバー側へ置く。静的デモでは難読化を「秘匿」と見なさず、ネタバレされても問題ない試遊版だけを配信する。

@@ -16,6 +16,8 @@ import { StaffAdapter } from "@/game/data-sources/StaffAdapter";
 import { SourceFilters } from "./SourceFilters";
 import { SourceViews } from "./SourceViews";
 import { CaseBoard } from "./CaseBoard";
+import { StoryLog } from "./StoryLog";
+import { briefing, currentObjective, markStoryRead } from "@/game/story/storyEngine";
 
 const adapters: Record<SourceId, DataSourceAdapter> = { hotel: new HotelAdapter(), access: new AccessAdapter(), camera: new CameraAdapter(), payment: new PaymentAdapter(), facility: new FacilityAdapter(), staff: new StaffAdapter() };
 
@@ -139,14 +141,15 @@ export function InvestigationDesk() {
           <details className="queryHistory"><summary>検索履歴（{save.history.length}件／最新100件）</summary>
             <ol>{[...save.history].reverse().map((entry, index) => <li key={index}><strong>{adapters[entry.sourceId].label}</strong><pre>{entry.query}</pre></li>)}</ol>
           </details>
-          <div className="objective"><small>CURRENT OBJECTIVE</small><p>404号室が部屋マスタに存在しないことを確認し、矛盾する記録を探せ。</p></div>
+          <div className="objective"><small>CURRENT OBJECTIVE</small><p>{currentObjective(save.story)}</p></div>
         </aside>
       </section>
 
+      {ready && <StoryLog story={save.story} onRead={(id) => setSave((current) => ({ ...current, story: markStoryRead(current.story, id) }))} />}
       {ready && <CaseBoard board={save.board} evidence={evidence} onChange={(board) => setSave((current) => ({ ...current, board }))} />}
       <footer><span>SYSTEM ONLINE</span><span>HOTEL ARGOS / 2026.10.14 / 23:41</span><button onClick={() => setBriefingOpen(true)}>事件概要</button></footer>
 
-      {briefingOpen && <div className="modalBackdrop"><section className="briefing"><small>INVESTIGATION BRIEF / 001</small><h1>存在しない404号室</h1><p>高級ホテル「ARGOS」の404号室で男性の遺体が発見された。しかし部屋マスタには404号室が存在しない。</p><p className="quote">「データがないことは、何も起きなかった証明ではない。」</p><button onClick={() => setBriefingOpen(false)}>捜査を開始する</button></section></div>}
+      {briefingOpen && <div className="modalBackdrop"><section className="briefing"><small>INVESTIGATION BRIEF / 001</small><h1>{briefing.title}</h1><p>{briefing.body}</p><p className="quote">{briefing.quote}</p><button onClick={() => setBriefingOpen(false)}>捜査を開始する</button></section></div>}
     </main>
   );
 }

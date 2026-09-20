@@ -111,4 +111,14 @@ summary:focus-visible { outline:2px solid var(--cyan); outline-offset:3px; }
 .boardLinks { list-style:none; padding:0 14px; font-size:12px; }
 .boardLinks li { border-top:1px solid var(--line); padding:10px 0; overflow-wrap:anywhere; }
 .boardLinks button { margin-right:8px; }
-@media(max-width:700px) { .shell { grid-template-rows:60px auto auto 34px; } .caseBoard { margin:0 6px 6px; } .boardConnect { grid-template-columns:minmax(0,1fr); } }
+.storyLog { margin:0 10px 10px; }
+.storyEntries { padding:14px; display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr)); }
+.storyEntry { border:1px solid var(--line); padding:14px; overflow-wrap:anywhere; }
+.storyEntry small { color:var(--muted); font-size:11px; }
+.storyEntry h3 { font-size:14px; }
+.storyEntry p { font-size:13px; line-height:1.8; }
+.storyEntry button { border:1px solid var(--line); padding:8px 12px; background:#102225; }
+.storyEntry button:disabled { opacity:.5; }
+.shell { grid-template-rows:72px minmax(0,1fr) auto auto 38px; }
+@media(max-width:700px) { .shell { grid-template-rows:60px auto auto auto 34px; } .storyLog { margin:0 6px 6px; } }
+@media(max-width:700px) { .shell { grid-template-rows:60px auto auto auto 34px; } .caseBoard { margin:0 6px 6px; } .boardConnect { grid-template-columns:minmax(0,1fr); } }

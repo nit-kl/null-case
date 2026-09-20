@@ -1,9 +1,16 @@
 "use client";
-import { useEffect, useState } from "react";
-import { decodeSave, emptySave, SAVE_KEY } from "./investigationSave";
+import { useCallback, useEffect, useState, type SetStateAction } from "react";
+import { decodeSave, emptySave, SAVE_KEY, type InvestigationSave } from "./investigationSave";
+import { advanceStory } from "../story/storyEngine";
 
 export function useInvestigationSave() {
-  const [save, setSave] = useState(emptySave);
+  const [save, updateSave] = useState(emptySave);
+  const setSave = useCallback((action: SetStateAction<InvestigationSave>) => {
+    updateSave((current) => {
+      const next = typeof action === "function" ? action(current) : action;
+      return { ...next, story: advanceStory(next.story, next) };
+    });
+  }, []);
   const [ready, setReady] = useState(false);
   const [blocked, setBlocked] = useState(false);
   const [status, setStatus] = useState("保存データを確認中…");
@@ -17,7 +24,7 @@ export function useInvestigationSave() {
       setStatus(`${error instanceof Error ? error.message : "保存データを読み取れませんでした。"} 既存の保存は上書きせず、この画面内で捜査を続けます。`);
     }
     setReady(true);
-  }, []);
+  }, [setSave]);
   useEffect(() => {
     if (!ready || blocked) return;
     try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); setStatus("捜査記録をこのブラウザに保存済み"); }

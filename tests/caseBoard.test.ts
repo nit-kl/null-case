@@ -55,7 +55,7 @@ describe("save migration for M04", () => {
   it("preserves v1 evidence and history while adding an empty board", () => {
     const old = { schemaVersion: 1, caseId: "case-001", caseSchemaVersion: 1, discoveredIds: ids, evidenceIds: ids, history: [{ sourceId: "hotel", query: "SELECT * FROM rooms" }] };
     const migrated = migrateSave(old);
-    expect(migrated.schemaVersion).toBe(2);
+    expect(migrated.schemaVersion).toBe(3);
     expect(migrated.evidenceIds).toEqual(ids);
     expect(migrated.history).toEqual(old.history);
     expect(migrated.board).toEqual(emptyBoard());
