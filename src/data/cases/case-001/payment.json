@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-14",
+  "timezone": "+09:00",
+  "records": [
+    {
+      "_recordId": "P-001",
+      "room": 401,
+      "timestamp": "2026-10-14T21:50:00+09:00",
+      "terminal": "ROOM-SERVICE-01",
+      "method": "room_charge",
+      "amount": 1800,
+      "currency": "JPY",
+      "item": "コーヒー",
+      "status": "posted"
+    },
+    {
+      "_recordId": "P-002",
+      "room": 404,
+      "timestamp": "2026-10-14T22:24:00+09:00",
+      "terminal": "ROOM-SERVICE-01",
+      "method": "room_charge",
+      "amount": 2400,
+      "currency": "JPY",
+      "item": "軽食セット",
+      "status": "cached"
+    },
+    {
+      "_recordId": "P-003",
+      "room": 405,
+      "timestamp": "2026-10-14T22:42:00+09:00",
+      "terminal": "BAR-01",
+      "method": "card",
+      "amount": 3600,
+      "currency": "JPY",
+      "item": "飲料",
+      "status": "posted"
+    },
+    {
+      "_recordId": "P-004",
+      "room": 406,
+      "timestamp": "2026-10-14T23:02:00+09:00",
+      "terminal": "ROOM-SERVICE-01",
+      "method": "cash",
+      "amount": 2400,
+      "currency": "JPY",
+      "item": "軽食セット",
+      "status": "posted"
+    }
+  ]
+}

@@ -1,30 +1,43 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import hotelData from "@/data/cases/case-001/hotel.json";
+import { useState } from "react";
 import { createEvidence } from "@/game/evidence/createEvidence";
-import { executeQuery } from "@/game/query-engine/queryEngine";
-import type { DataRow, DataTable, Evidence, QueryResult } from "@/types/game";
+import type { Evidence } from "@/types/game";
+import { HotelAdapter } from "@/game/data-sources/HotelAdapter";
+import { AccessAdapter } from "@/game/data-sources/AccessAdapter";
+import { FacilityAdapter } from "@/game/data-sources/FacilityAdapter";
+import type { DataSourceAdapter, EvidenceCandidate, SourceId, SourceResult } from "@/game/data-sources/DataSourceAdapter";
+import { PowerChart } from "./PowerChart";
+import { CameraAdapter } from "@/game/data-sources/CameraAdapter";
+import { PaymentAdapter } from "@/game/data-sources/PaymentAdapter";
+import { StaffAdapter } from "@/game/data-sources/StaffAdapter";
+import { SourceFilters } from "./SourceFilters";
+import { SourceViews } from "./SourceViews";
 
-const presets = [
-  "SELECT * FROM rooms WHERE room_number = 404;",
-  "SELECT * FROM rooms;",
-  "SELECT * FROM room_notes WHERE room_number = 404;",
-  "SELECT guest_name, room_number FROM reservations;",
-];
+const adapters: Record<SourceId, DataSourceAdapter> = { hotel: new HotelAdapter(), access: new AccessAdapter(), camera: new CameraAdapter(), payment: new PaymentAdapter(), facility: new FacilityAdapter(), staff: new StaffAdapter() };
 
 export function InvestigationDesk() {
-  const tables = hotelData.tables as DataTable[];
-  const [query, setQuery] = useState(presets[0]);
-  const [result, setResult] = useState<QueryResult | null>(null);
+  const [sourceId, setSourceId] = useState<SourceId>("hotel");
+  const adapter = adapters[sourceId];
+  const [query, setQuery] = useState(adapter.presets[0]);
+  const [result, setResult] = useState<SourceResult | null>(null);
+  const [room, setRoom] = useState("404");
+  const [startTime, setStartTime] = useState("22:00");
+  const [endTime, setEndTime] = useState("23:00");
   const [error, setError] = useState("");
   const [evidence, setEvidence] = useState<Evidence[]>([]);
   const [briefingOpen, setBriefingOpen] = useState(true);
-  const tableNames = useMemo(() => tables.map((table) => table.name), [tables]);
+  const switchSource = (id: SourceId) => {
+    setSourceId(id);
+    setQuery(adapters[id].presets[0]);
+    setResult(null);
+    setError("");
+  };
 
   const run = () => {
     try {
-      setResult(executeQuery(query, tables));
+      const input = sourceId === "facility" ? `room:${room} AND metric:power_kw AND timestamp:[${startTime} TO ${endTime}]` : query;
+      setResult(adapter.execute(input));
       setError("");
     } catch (caught) {
       setResult(null);
@@ -32,9 +45,16 @@ export function InvestigationDesk() {
     }
   };
 
-  const register = (row: DataRow) => {
-    if (evidence.some((item) => JSON.stringify(item.row) === JSON.stringify(row))) return;
-    setEvidence((items) => [...items, createEvidence(row, "HOTEL DB", items.length + 1)]);
+  const register = (candidate: EvidenceCandidate) => {
+    const item = createEvidence(candidate);
+    setEvidence((items) => items.some((saved) => saved.id === item.id) ? items : [...items, item]);
+  };
+
+  const exploreStaff = (id: string) => {
+    const next = JSON.stringify({ node_id: id });
+    setQuery(next);
+    try { setResult(adapters.staff.execute(next)); setError(""); }
+    catch (caught) { setResult(null); setError(caught instanceof Error ? caught.message : "探索できませんでした。"); }
   };
 
   return (
@@ -48,37 +68,52 @@ export function InvestigationDesk() {
       <section className="workspace">
         <aside className="sources panel">
           <p className="eyebrow">DATA SOURCES</p>
-          <button className="source active"><span>H</span><div>HOTEL DB<small>CONNECTED</small></div></button>
-          {["ACCESS DB", "CAMERA DB", "PAYMENT DB", "FACILITY DB", "STAFF DB"].map((name) => (
-            <button className="source locked" key={name} disabled><span>×</span><div>{name}<small>LOCKED / M02</small></div></button>
-          ))}
+          <div className="sourceList">{Object.values(adapters).map((source) => <button key={source.id} aria-pressed={sourceId === source.id} onClick={() => switchSource(source.id)} className={`source ${sourceId === source.id ? "active" : ""}`}><span>{source.label[0]}</span><div>{source.label}<small>CONNECTED</small></div></button>)}
+          </div>
           <div className="schema">
             <p>SCHEMA</p>
-            {tableNames.map((name) => <button key={name} onClick={() => setQuery(`SELECT * FROM ${name};`)}>▸ {name}</button>)}
+            {adapter.schema.map((table) => <button key={table.name} onClick={() => {
+              setQuery(table.query);
+              if (sourceId === "facility") { setRoom("404"); setStartTime("22:00"); setEndTime("23:00"); }
+            }} title={table.columns.join(", ")}>▸ {table.name}<small>{table.columns.join(", ")}</small></button>)}
           </div>
         </aside>
 
         <section className="consoleColumn">
           <div className="panel console">
-            <div className="panelTitle"><span>QUERY CONSOLE</span><span className="status">● SECURE SESSION</span></div>
-            <div className="presets">{presets.map((preset, index) => <button key={preset} onClick={() => setQuery(preset)}>Q{index + 1}</button>)}</div>
-            <div className="editor"><span className="lineNo">1</span><textarea aria-label="SQL query" value={query} onChange={(event) => setQuery(event.target.value)} spellCheck={false} /></div>
-            <button className="run" onClick={run}>RUN QUERY <kbd>CTRL ↵</kbd></button>
+            <div className="panelTitle"><span>{adapter.label}</span><span className="status">● SECURE SESSION</span></div>
+            {sourceId === "facility" ? <div className="facilityControls">
+              <p>電力使用量（kW） · 2026-10-14 / UTC+09:00 · 両端の分を含む</p>
+              <label>部屋番号<input type="number" min="1" value={room} onChange={(event) => setRoom(event.target.value)} /></label>
+              <label>開始時刻<input type="time" value={startTime} onChange={(event) => setStartTime(event.target.value)} /></label>
+              <label>終了時刻<input type="time" value={endTime} onChange={(event) => setEndTime(event.target.value)} /></label>
+            </div> : adapter.controls ? <SourceFilters adapter={adapter} query={query} onChange={setQuery} /> : <>
+              <div className="presets">{adapter.presets.map((preset, index) => <button key={preset} title={preset} aria-label={`Q${index + 1}: ${preset}`} onClick={() => setQuery(preset)}>Q{index + 1}</button>)}</div>
+              <div className="editor"><span className="lineNo">1</span><textarea aria-label={sourceId === "hotel" ? "SQL query" : "ACCESS検索式"} value={query} onChange={(event) => setQuery(event.target.value)} onKeyDown={(event) => { if ((event.ctrlKey || event.metaKey) && event.key === "Enter") { event.preventDefault(); run(); } }} spellCheck={false} /></div>
+              {sourceId === "access" && <p className="queryHelp">room:404 AND timestamp:[22:00 TO 23:00]<br />2026-10-14 / UTC+09:00 · 両端の分を含む</p>}
+            </>}
+            <button className="run" onClick={run}>RUN QUERY {(sourceId === "hotel" || sourceId === "access") && <kbd>CTRL ↵</kbd>}</button>
           </div>
 
-          <div className="panel results">
+          <div className={`panel results ${result && ["facility", "camera", "staff"].includes(result.sourceId) ? "facilityResults" : ""}`}>
             <div className="panelTitle"><span>RESULTS</span><span>{result ? `${result.message} ${result.elapsedMs}ms` : "AWAITING QUERY"}</span></div>
-            {error && <div className="error">{error}</div>}
+            {error && <div className="error" role="alert">{error}</div>}
             {!result && !error && <div className="empty"><b>NO RESULT SET</b><span>クエリを実行して事件記録へアクセスしてください。</span></div>}
-            {result && result.rows.length === 0 && <div className="zero"><strong>0 rows returned.</strong><p>記録上、その部屋は存在しません。しかし事件現場は確かに404号室でした。</p></div>}
+            {result && result.rows.length === 0 && <div className="zero"><strong>0 rows returned.</strong><p>この検索条件に一致する記録はありません。他の条件やデータソースと照合してください。</p></div>}
+            {result?.sourceId === "facility" && <PowerChart result={result} />}
+            {result && <SourceViews result={result} onExplore={exploreStaff} />}
             {result && result.rows.length > 0 && (
-              <div className="tableWrap"><table><thead><tr>{result.columns.map((column) => <th key={column}>{column}</th>)}<th>action</th></tr></thead><tbody>{result.rows.map((row, index) => <tr key={index}>{result.columns.map((column) => <td key={column}>{String(row[column] ?? "NULL")}</td>)}<td><button className="pin" onClick={() => register(row)}>＋ 証拠化</button></td></tr>)}</tbody></table></div>
+              <div className="tableWrap" tabIndex={0} aria-label="検索結果"><table><thead><tr>{result.columns.map((column) => <th key={column}>{column}</th>)}<th>action</th></tr></thead><tbody>{result.rows.map((row, index) => {
+                const candidate = result.candidates[index];
+                const saved = evidence.some((item) => item.id === createEvidence(candidate).id);
+                return <tr key={candidate.recordId}>{result.columns.map((column) => <td key={column}>{String(row[column] ?? "NULL")}</td>)}<td><button className="pin" disabled={saved} onClick={() => register(candidate)}>{saved ? "登録済み" : "＋ 証拠化"}</button></td></tr>;
+              })}</tbody></table></div>
             )}
           </div>
         </section>
 
         <aside className="evidence panel">
-          <div className="panelTitle"><span>EVIDENCE</span><span>{evidence.length}/12</span></div>
+          <div className="panelTitle"><span>EVIDENCE</span><span aria-live="polite">{evidence.length} 件</span></div>
           {evidence.length === 0 ? <div className="empty compact"><b>EMPTY</b><span>結果行から証拠を登録</span></div> : evidence.map((item) => (
             <article className="evidenceCard" key={item.id}><small>{item.id} · {item.source}</small><h3>{item.title}</h3><p>{item.summary}</p></article>
           ))}

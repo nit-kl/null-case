@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-14",
+  "timezone": "+09:00",
+  "records": [
+    {
+      "_recordId": "A-001",
+      "room": 401,
+      "timestamp": "2026-10-14T22:00:00+09:00",
+      "card_id": "K-401",
+      "event": "entry"
+    },
+    {
+      "_recordId": "A-002",
+      "room": 404,
+      "timestamp": "2026-10-14T22:08:00+09:00",
+      "card_id": "K-SERVICE-04",
+      "event": "denied"
+    },
+    {
+      "_recordId": "A-003",
+      "room": 405,
+      "timestamp": "2026-10-14T22:18:00+09:00",
+      "card_id": "K-405",
+      "event": "entry"
+    },
+    {
+      "_recordId": "A-004",
+      "room": 403,
+      "timestamp": "2026-10-14T22:35:00+09:00",
+      "card_id": "K-SERVICE-04",
+      "event": "entry"
+    },
+    {
+      "_recordId": "A-005",
+      "room": 406,
+      "timestamp": "2026-10-14T23:00:00+09:00",
+      "card_id": "K-406",
+      "event": "entry"
+    },
+    {
+      "_recordId": "A-006",
+      "room": 405,
+      "timestamp": "2026-10-14T23:12:00+09:00",
+      "card_id": "K-405",
+      "event": "exit"
+    }
+  ]
+}

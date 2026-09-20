@@ -8,6 +8,8 @@ export interface DataTable {
 }
 
 export interface QueryResult {
+  table: string;
+  records: DataRow[];
   columns: string[];
   rows: DataRow[];
   elapsedMs: number;

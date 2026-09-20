@@ -1,13 +1,16 @@
-import type { DataRow, Evidence } from "@/types/game";
+import type { Evidence } from "../../types/game";
+import type { EvidenceCandidate } from "../data-sources/DataSourceAdapter";
 
-export function createEvidence(row: DataRow, source: string, index: number): Evidence {
-  const room = row.room_number ? `ROOM ${row.room_number}` : "不明レコード";
-  const notable = row.note ?? row.status ?? Object.values(row).find(Boolean) ?? "データ断片";
+export function createEvidence(candidate: EvidenceCandidate): Evidence {
+  const { row, sourceId, table, recordId } = candidate;
+  const number = row.room_number ?? row.room;
+  const room = number !== undefined ? `ROOM ${number}` : String(row.person_name ?? row.camera_id ?? recordId);
+  const notable = row.note ?? (row.amount !== undefined ? `${row.item} · ${row.amount} ${row.currency} · ${row.status}` : undefined) ?? (row.relation ? `${row.relation}: ${row.target_label}` : undefined) ?? row.status ?? row.event ?? (row.value !== undefined ? `${row.value} ${row.unit ?? ""}` : recordId);
   return {
-    id: `E-${String(index).padStart(3, "0")}`,
+    id: `E-case-001-${sourceId}-${table}-${recordId}`,
     title: `${room} の記録`,
-    source,
-    summary: String(notable),
-    row,
+    source: `${sourceId}.${table}.${recordId}`,
+    summary: `${row.timestamp ? `${row.timestamp} · ` : ""}${notable}`,
+    row: { ...row },
   };
 }

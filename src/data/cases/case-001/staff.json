@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-14",
+  "timezone": "+09:00",
+  "records": [
+    {
+      "_recordId": "S-R001",
+      "person_id": "S-01",
+      "person_name": "神代誠司",
+      "relation": "所属",
+      "target_id": "D-MANAGEMENT",
+      "target_label": "ホテル管理"
+    },
+    {
+      "_recordId": "S-R002",
+      "person_id": "S-01",
+      "person_name": "神代誠司",
+      "relation": "権限",
+      "target_id": "P-APPROVE",
+      "target_label": "停止区画の入室承認"
+    },
+    {
+      "_recordId": "S-R003",
+      "person_id": "S-02",
+      "person_name": "佐伯美咲",
+      "relation": "所属",
+      "target_id": "D-HOUSEKEEPING",
+      "target_label": "清掃部門"
+    },
+    {
+      "_recordId": "S-R004",
+      "person_id": "S-02",
+      "person_name": "佐伯美咲",
+      "relation": "権限",
+      "target_id": "P-SERVICE",
+      "target_label": "サービス区画への入室"
+    },
+    {
+      "_recordId": "S-R005",
+      "person_id": "S-03",
+      "person_name": "雨宮蓮",
+      "relation": "所属",
+      "target_id": "D-FACILITY",
+      "target_label": "施設管理"
+    },
+    {
+      "_recordId": "S-R006",
+      "person_id": "S-03",
+      "person_name": "雨宮蓮",
+      "relation": "権限",
+      "target_id": "P-SERVICE",
+      "target_label": "サービス区画への入室"
+    },
+    {
+      "_recordId": "S-R007",
+      "person_id": "S-03",
+      "person_name": "雨宮蓮",
+      "relation": "権限",
+      "target_id": "P-METER",
+      "target_label": "電力計の点検"
+    }
+  ]
+}

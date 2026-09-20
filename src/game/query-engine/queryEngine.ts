@@ -27,6 +27,7 @@ export function executeQuery(query: string, tables: DataTable[]): QueryResult {
 
   let rows = [...table.rows];
   if (whereColumn && whereRawValue !== undefined) {
+    if (table.rows[0] && !Object.hasOwn(table.rows[0], whereColumn)) throw new Error(`列 '${whereColumn}' は存在しません。`);
     const expected = parseValue(whereRawValue);
     rows = rows.filter((row) => String(row[whereColumn] ?? "") === String(expected ?? ""));
   }
@@ -36,10 +37,10 @@ export function executeQuery(query: string, tables: DataTable[]): QueryResult {
     : rawColumns.split(",").map((column) => column.trim());
 
   for (const column of selectedColumns) {
-    if (table.rows[0] && !(column in table.rows[0])) throw new Error(`列 '${column}' は存在しません。`);
+    if (table.rows[0] && !Object.hasOwn(table.rows[0], column)) throw new Error(`列 '${column}' は存在しません。`);
   }
 
   const projected = rows.map((row) => Object.fromEntries(selectedColumns.map((column) => [column, row[column]])) as DataRow);
   const elapsedMs = Math.max(1, Math.round(performance.now() - started));
-  return { columns: selectedColumns, rows: projected, elapsedMs, message: `${projected.length} rows returned.` };
+  return { table: table.name, records: rows, columns: selectedColumns, rows: projected, elapsedMs, message: `${projected.length} rows returned.` };
 }

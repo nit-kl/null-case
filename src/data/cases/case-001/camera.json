@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-14",
+  "timezone": "+09:00",
+  "records": [
+    {
+      "_recordId": "C-001",
+      "camera_id": "CAM-4F-ELEVATOR",
+      "timestamp": "2026-10-14T22:05:00+09:00",
+      "person_tag": "service_uniform",
+      "note": "サービス用カートを押す人物"
+    },
+    {
+      "_recordId": "C-002",
+      "camera_id": "CAM-4F-ELEVATOR",
+      "timestamp": "2026-10-14T22:17:00+09:00",
+      "person_tag": "dark_coat",
+      "note": "エレベーターから4階へ移動"
+    },
+    {
+      "_recordId": "C-003",
+      "camera_id": "CAM-4F-CORRIDOR",
+      "timestamp": "2026-10-14T22:19:00+09:00",
+      "person_tag": "dark_coat",
+      "note": "廊下奥へ移動。顔の識別不可"
+    },
+    {
+      "_recordId": "C-004",
+      "camera_id": "CAM-4F-CORRIDOR",
+      "timestamp": "2026-10-14T22:36:00+09:00",
+      "person_tag": "service_uniform",
+      "note": "403号室前で停止"
+    },
+    {
+      "_recordId": "C-005",
+      "camera_id": "CAM-LOBBY",
+      "timestamp": "2026-10-14T23:04:00+09:00",
+      "person_tag": "dark_coat",
+      "note": "ロビーを横断。4階映像と同一人物かは未確認"
+    }
+  ]
+}

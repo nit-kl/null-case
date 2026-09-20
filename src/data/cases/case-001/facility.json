@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-14",
+  "timezone": "+09:00",
+  "records": [
+    {
+      "_recordId": "F-001",
+      "room": 404,
+      "timestamp": "2026-10-14T22:00:00+09:00",
+      "metric": "power_kw",
+      "value": 0.08,
+      "unit": "kW"
+    },
+    {
+      "_recordId": "F-002",
+      "room": 404,
+      "timestamp": "2026-10-14T22:10:00+09:00",
+      "metric": "power_kw",
+      "value": 0.09,
+      "unit": "kW"
+    },
+    {
+      "_recordId": "F-003",
+      "room": 404,
+      "timestamp": "2026-10-14T22:20:00+09:00",
+      "metric": "power_kw",
+      "value": 1.42,
+      "unit": "kW"
+    },
+    {
+      "_recordId": "F-004",
+      "room": 404,
+      "timestamp": "2026-10-14T22:30:00+09:00",
+      "metric": "power_kw",
+      "value": 1.65,
+      "unit": "kW"
+    },
+    {
+      "_recordId": "F-005",
+      "room": 404,
+      "timestamp": "2026-10-14T22:40:00+09:00",
+      "metric": "power_kw",
+      "value": 0.72,
+      "unit": "kW"
+    },
+    {
+      "_recordId": "F-006",
+      "room": 404,
+      "timestamp": "2026-10-14T22:50:00+09:00",
+      "metric": "power_kw",
+      "value": 0.1,
+      "unit": "kW"
+    },
+    {
+      "_recordId": "F-007",
+      "room": 404,
+      "timestamp": "2026-10-14T23:00:00+09:00",
+      "metric": "power_kw",
+      "value": 0.08,
+      "unit": "kW"
+    }
+  ]
+}
