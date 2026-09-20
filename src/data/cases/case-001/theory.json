@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "caseId": "case-001",
+  "fields": [
+    { "id": "culprit", "label": "犯人", "prompt": "誰が事件を起こしたと考えるか" },
+    { "id": "motive", "label": "動機", "prompt": "なぜ事件を起こしたと考えるか" },
+    { "id": "method", "label": "方法", "prompt": "侵入や犯行をどのように行ったと考えるか" },
+    { "id": "time", "label": "死亡時刻", "prompt": "いつ起きたと考えるか。時間帯でも記入できます" }
+  ],
+  "maxTextLength": 1000,
+  "maxSubmissions": 20
+}

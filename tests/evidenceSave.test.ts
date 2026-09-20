@@ -52,7 +52,7 @@ describe("versioned investigation saves", () => {
   });
   it("rejects corrupt and oversized JSON", () => {
     expect(() => decodeSave("{" )).toThrow();
-    expect(() => decodeSave(" ".repeat(1100001))).toThrow();
+    expect(() => decodeSave(" ".repeat(2000001))).toThrow();
   });
   it("ignores injected display fields and normalizes duplicates", () => {
     const save = decodeSave(JSON.stringify({ ...emptySave(), discoveredIds: [id, id], evidenceIds: [id, id], row: { note: "forged" } }));

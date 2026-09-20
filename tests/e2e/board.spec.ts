@@ -4,6 +4,7 @@ test("board placement, connection editing and v1 migration persist", async ({ pa
   const ids = ["E-case-001-hotel-room_notes-N-882", "E-case-001-access-access_logs-A-002"];
   const key = "null-case:case-001:investigation";
   await page.goto("/");
+  await expect(page.locator(".saveStatus")).toContainText("保存済み");
   await page.evaluate(({ ids, key }) => localStorage.setItem(key, JSON.stringify({ schemaVersion: 1, caseId: "case-001", caseSchemaVersion: 1, discoveredIds: ids, evidenceIds: ids, history: [] })), { ids, key });
   await page.reload();
   await page.getByRole("button", { name: "捜査を開始する" }).click();

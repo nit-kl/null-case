@@ -46,7 +46,7 @@ STAFFは人物と部署／権限の間の関係レコードを保持し、選択
 
 初期版は `localStorage` を使用し、次を保存する。
 
-保存キーは`null-case:case-001:investigation`。M05では`schemaVersion: 3`、`caseId: "case-001"`、`caseSchemaVersion: 1`、`discoveredIds`、`evidenceIds`、`history`、`board`、`story`を保持する。履歴はソースIDと実行した検索条件（最新100件、1件最大10,000文字）。登録済みIDは発見済みIDの部分集合であることを検証する。証拠本文は保存せず、復元時に事件データのカタログから再構築する。
+保存キーは`null-case:case-001:investigation`。M06では`schemaVersion: 4`、`caseId: "case-001"`、`caseSchemaVersion: 1`、`discoveredIds`、`evidenceIds`、`history`、`board`、`story`、`theory`を保持する。履歴はソースIDと実行した検索条件（最新100件、1件最大10,000文字）。登録済みIDは発見済みIDの部分集合であることを検証する。証拠本文は保存せず、復元時に事件データのカタログから再構築する。
 
 `migrateSave`がバージョン境界を担当する。v1は空のボードを追加、v2は既存ボードを保持し、ともに証拠・履歴を保ってv3へ移行する。v1・v2の進捗で条件を満たす通信は未読で追加する。v2以降のボード、v3の通信状態が欠損・不正な場合は初期化せず復元を拒否する。破損、未知ID、異なる事件、未対応バージョンは復元せず、自動保存も停止して元データを保護する。容量不足や保存禁止でもメモリ上の操作は継続する。同時に複数タブからの更新を統合する処理は未対応。
 
@@ -54,7 +54,11 @@ STAFFは人物と部署／権限の間の関係レコードを保持し、選択
 
 `board.nodes`は`evidenceId`と整数座標`x: 0..2` / `y: 0..19`、`board.links`は`from` / `to` / `kind: relation | contradiction` / `note`を保持する。登録済み証拠だけ配置でき、座標・証拠の重複、存在しない端点、自己接続、同じ組の逆向きを含む重複接続を拒否する。接続は無向で最大100本、メモは200文字まで。メモをHTMLや式として評価しない。
 
-以下は今後を含めた保存対象で、推理下書き・ヒント使用数はそれぞれの機能実装時に追加する。
+M06ではv1〜v3からv4へ移行し、既存の証拠・履歴・ボード・通信を保持して空の`theory`を追加する。v3以降の既読状態は保持する。v4の`theory`が欠損・不正な場合は復元を拒否する。読み込む保存文字列の上限は2,000,000文字。
+
+`theory.draft`はculprit/motive/method/timeの4項目で、各項目は`statement` / `reasoning`（各1000文字以内）と登録済みの`evidenceIds`を持つ。`theory.submissions`は連番`id`、UTCの`submittedAt`、提出時点の`draft`を最大20件保持する。空欄の下書きは許可し、提出履歴には全項目の記述・説明・証拠を必須とする。提出時の内容は下書きと独立して複製し、直前と同内容の再提出は拒否する。未登録・重複証拠IDや不正な日時を検証する。
+
+以下は今後を含めた保存対象で、ヒント使用数は機能実装時に追加する。
 
 - caseId / schemaVersion
 - 発見済み証拠ID
