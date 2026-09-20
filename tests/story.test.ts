@@ -45,7 +45,7 @@ describe("v3 migration", () => {
   it.each([1, 2])("derives unread messages from v%s evidence without losing history or board", (version) => {
     const old = { ...emptySave(), schemaVersion: version, discoveredIds: [note, access], evidenceIds: [note, access], history: [{ sourceId: "hotel", query: "SELECT * FROM rooms" }] };
     const migrated = migrateSave(old);
-    expect(migrated.schemaVersion).toBe(4);
+    expect(migrated.schemaVersion).toBe(5);
     expect(migrated.story.deliveredIds).toEqual(["ST-001", "ST-002", "ST-003"]);
     expect(migrated.story.readIds).toEqual([]);
     expect(migrated.history).toEqual(old.history);

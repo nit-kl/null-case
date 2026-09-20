@@ -1,0 +1,92 @@
+{
+  "hotelTables": [
+    {
+      "name": "case_documents",
+      "label": "保全・捜査資料",
+      "rows": [
+        {
+          "_recordId": "H-M701",
+          "room_number": 404,
+          "created_at": "2026-10-14T18:00:00+09:00",
+          "title": "監査資料引渡通知",
+          "note": "今夜、保管資料を回収し廃棄履歴と照合する。受領担当：支配人。",
+          "origin": "監査窓口の送信控え"
+        },
+        {
+          "_recordId": "H-M702",
+          "room_number": 404,
+          "created_at": "2026-10-14T19:10:00+09:00",
+          "title": "引渡停止の内部指示",
+          "note": "承認を得ず廃棄した記録の照合前に、今夜の引渡しを止める必要がある。署名：神代誠司。",
+          "origin": "管理端末から保全した署名付き指示書"
+        },
+        {
+          "_recordId": "H-M703",
+          "room_number": 404,
+          "created_at": "2026-10-15T09:00:00+09:00",
+          "title": "死亡時間帯の鑑定結果",
+          "note": "死亡推定時間帯は2026-10-14 22:30〜22:40（UTC+09:00）。推定幅より細かい時刻は特定不能。",
+          "origin": "翌朝追補された捜査側鑑定資料"
+        },
+        {
+          "_recordId": "H-M704",
+          "room_number": 404,
+          "created_at": "2026-10-14T22:31:00+09:00",
+          "title": "現場端末の保全音声",
+          "note": "男性の声『支配人、回収の件で話をしたい』。応答者の声を業務音声と照合し神代誠司と確認。",
+          "origin": "404号室内端末のローカル記録・捜査側照合結果"
+        }
+      ]
+    }
+  ],
+  "accessTables": [
+    {
+      "name": "controller_logs",
+      "label": "独立錠前コントローラー",
+      "rows": [
+        {
+          "_recordId": "A-M701",
+          "room": 404,
+          "timestamp": "2026-10-14T22:29:00+09:00",
+          "card_id": "K-MANAGER-01",
+          "event": "granted",
+          "origin": "通常ログとは独立した錠前コントローラー"
+        }
+      ]
+    },
+    {
+      "name": "admin_audit",
+      "label": "管理操作監査",
+      "rows": [
+        {
+          "_recordId": "A-M702",
+          "room": 404,
+          "timestamp": "2026-10-14T22:46:00+09:00",
+          "actor": "S-01",
+          "event": "delete",
+          "target": "404号室 22:29 入室履歴",
+          "origin": "外部監査転送先・通常ログの削除権限では改変不可"
+        }
+      ]
+    }
+  ],
+  "cameraRecords": [
+    {
+      "_recordId": "C-M701",
+      "camera_id": "CAM-4F-MANAGEMENT",
+      "timestamp": "2026-10-14T22:28:00+09:00",
+      "person_tag": "S-01",
+      "note": "顔と名札を照合し神代誠司と確認。404区画へ向かう。独立した管理通路カメラ。"
+    }
+  ],
+  "staffRecords": [
+    {
+      "_recordId": "S-M701",
+      "person_id": "S-01",
+      "person_name": "神代誠司",
+      "relation": "本人認証付き資格情報",
+      "target_id": "K-MANAGER-01",
+      "target_label": "404特別解錠資格（本人認証必須・共有貸出不可）"
+    }
+  ]
+}

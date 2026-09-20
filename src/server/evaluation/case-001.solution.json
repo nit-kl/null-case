@@ -1,0 +1,88 @@
+{
+  "version": "case-001-r1",
+  "rules": {
+    "culprit": {
+      "allowedChoices": [
+        "c01",
+        "c02",
+        "c03",
+        "c04"
+      ],
+      "correctChoices": [
+        "c02"
+      ],
+      "evidenceGroups": [
+        [
+          "E-case-001-hotel-case_documents-H-M704"
+        ],
+        [
+          "E-case-001-camera-camera_events-C-M701"
+        ],
+        [
+          "E-case-001-access-controller_logs-A-M701"
+        ],
+        [
+          "E-case-001-staff-staff_relations-S-M701"
+        ]
+      ]
+    },
+    "motive": {
+      "allowedChoices": [
+        "m01",
+        "m02",
+        "m03"
+      ],
+      "correctChoices": [
+        "m03"
+      ],
+      "evidenceGroups": [
+        [
+          "E-case-001-hotel-case_documents-H-M701"
+        ],
+        [
+          "E-case-001-hotel-case_documents-H-M702"
+        ]
+      ]
+    },
+    "method": {
+      "allowedChoices": [
+        "w01",
+        "w02",
+        "w03"
+      ],
+      "correctChoices": [
+        "w01"
+      ],
+      "evidenceGroups": [
+        [
+          "E-case-001-access-controller_logs-A-M701"
+        ],
+        [
+          "E-case-001-access-admin_audit-A-M702"
+        ],
+        [
+          "E-case-001-staff-staff_relations-S-M701"
+        ]
+      ]
+    },
+    "time": {
+      "allowedChoices": [
+        "t01",
+        "t02",
+        "t03"
+      ],
+      "correctChoices": [
+        "t03"
+      ],
+      "evidenceGroups": [
+        [
+          "E-case-001-hotel-case_documents-H-M703"
+        ]
+      ]
+    }
+  },
+  "ending": {
+    "title": "CASE 001 — 記録の向こう側",
+    "body": "神代誠司の現場での行動、本人認証付きの解錠、削除監査を照合した。監査資料の回収を妨害し、自身の無許可廃棄を隠す意図が記録から裏付けられた。死亡推定時間帯は22:30〜22:40。404号室に残った記録が、通常ログから消された行動をつないだ。だが10年前の事件の全容と、NULL管理者の正体はまだ解明されていない。"
+  }
+}

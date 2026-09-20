@@ -1,4 +1,5 @@
 import data from "../../data/cases/case-001/camera.json";
+import extra from "../../data/cases/case-001/supplemental.json";
 import type { DataRow } from "../../types/game";
 import { withCandidates, type DataSourceAdapter, type SourceControl } from "./DataSourceAdapter";
 import { recordResult } from "./filterQuery";
@@ -9,7 +10,7 @@ export class CameraAdapter implements DataSourceAdapter {
   readonly label = "CAMERA DB";
   readonly presets = [JSON.stringify({ camera_id: "", person_tag: "", start: "22:00", end: "23:00" })];
   readonly schema = [{ name: "camera_events", columns: ["camera_id", "timestamp", "person_tag", "note"], query: this.presets[0] }];
-  constructor(private readonly records: DataRow[] = data.records) {}
+  constructor(private readonly records: DataRow[] = [...data.records, ...extra.cameraRecords]) {}
   get controls(): SourceControl[] { return [
     { key: "camera_id", label: "カメラ", type: "select", options: choices(this.records, "camera_id") },
     { key: "person_tag", label: "人物タグ", type: "select", options: choices(this.records, "person_tag") },

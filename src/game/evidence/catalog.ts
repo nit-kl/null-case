@@ -5,28 +5,31 @@ import payment from "../../data/cases/case-001/payment.json";
 import facility from "../../data/cases/case-001/facility.json";
 import staff from "../../data/cases/case-001/staff.json";
 import rules from "../../data/cases/case-001/evidence.json";
+import extra from "../../data/cases/case-001/supplemental.json";
 import type { DataRow, Evidence } from "../../types/game";
 import type { EvidenceCandidate, SourceResult } from "../data-sources/DataSourceAdapter";
 import { createEvidence } from "./createEvidence";
 
 const candidates: EvidenceCandidate[] = [];
 const keys: Record<string, string> = { rooms: "room_number", reservations: "reservation_id", room_notes: "note_id" };
-for (const table of hotel.tables) {
-  for (const row of table.rows as DataRow[]) candidates.push({ sourceId: "hotel", table: table.name, recordId: String(row[keys[table.name]]), row });
+for (const table of [...hotel.tables, ...extra.hotelTables]) {
+  for (const row of table.rows as DataRow[]) candidates.push({ sourceId: "hotel", table: table.name, recordId: String(row._recordId ?? row[keys[table.name]]), row });
 }
 for (const [sourceId, table, records] of [
-  ["access", "access_logs", access.records], ["camera", "camera_events", camera.records],
+  ["access", "access_logs", access.records], ["camera", "camera_events", [...camera.records, ...extra.cameraRecords]],
   ["payment", "transactions", payment.records], ["facility", "power_readings", facility.records],
-  ["staff", "staff_relations", staff.records],
+  ["staff", "staff_relations", [...staff.records, ...extra.staffRecords]],
 ] as const) {
   for (const row of records) candidates.push({ sourceId, table, recordId: row._recordId, row });
 }
+
+for (const table of extra.accessTables) for (const row of table.rows) candidates.push({ sourceId: "access", table: table.name, recordId: row._recordId, row });
 
 // Save only stable IDs; always rebuild displayed evidence from the current case records.
 export const evidenceCatalog = new Map<string, Evidence>(candidates.map((candidate) => {
   const item = createEvidence(candidate);
   const definition = rules.definitions.find((rule) => rule.source === item.source);
-  return [item.id, { ...item, title: definition?.title ?? item.title, tags: definition?.tags ?? [] }];
+  return [item.id, { ...item, title: definition?.title ?? String(candidate.row.title ?? item.title), tags: definition?.tags ?? [] }];
 }));
 
 export function discoverEvidence(result: SourceResult): string[] {

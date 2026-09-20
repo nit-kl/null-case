@@ -7,7 +7,7 @@ import { emptyTheory, validateTheory, type TheoryState } from "../theory/caseThe
 export const SAVE_KEY = "null-case:case-001:investigation";
 export interface QueryHistoryEntry { sourceId: SourceId; query: string; }
 export interface InvestigationSave {
-  schemaVersion: 4;
+  schemaVersion: 5;
   theory: TheoryState;
   story: StoryState;
   board: CaseBoard;
@@ -17,13 +17,13 @@ export interface InvestigationSave {
   evidenceIds: string[];
   history: QueryHistoryEntry[];
 }
-export const emptySave = (): InvestigationSave => ({ schemaVersion: 4, caseId: "case-001", caseSchemaVersion: 1, discoveredIds: [], evidenceIds: [], history: [], board: emptyBoard(), story: advanceStory(emptyStory(), { discoveredIds: [], evidenceIds: [], board: emptyBoard() }), theory: emptyTheory() });
+export const emptySave = (): InvestigationSave => ({ schemaVersion: 5, caseId: "case-001", caseSchemaVersion: 1, discoveredIds: [], evidenceIds: [], history: [], board: emptyBoard(), story: advanceStory(emptyStory(), { discoveredIds: [], evidenceIds: [], board: emptyBoard() }), theory: emptyTheory() });
 const sources = ["hotel", "access", "camera", "payment", "facility", "staff"];
 const object = (value: unknown): value is Record<string, unknown> => !!value && typeof value === "object" && !Array.isArray(value);
 
 /** v1 adds an empty board; v1/v2 derive story delivery from existing progress. */
 export function migrateSave(value: unknown): InvestigationSave {
-  if (!object(value) || typeof value.schemaVersion !== "number" || ![1, 2, 3, 4].includes(value.schemaVersion) || value.caseId !== "case-001" || value.caseSchemaVersion !== 1) throw new Error("この保存データの事件またはバージョンには対応していません。");
+  if (!object(value) || typeof value.schemaVersion !== "number" || ![1, 2, 3, 4, 5].includes(value.schemaVersion) || value.caseId !== "case-001" || value.caseSchemaVersion !== 1) throw new Error("この保存データの事件またはバージョンには対応していません。");
   const readIds = (value: unknown): string[] => {
     if (!Array.isArray(value) || value.length > evidenceCatalog.size || value.some((id) => typeof id !== "string" || !evidenceCatalog.has(id))) throw new Error("保存された証拠IDが不正です。");
     return [...new Set(value as string[])];
@@ -34,7 +34,7 @@ export function migrateSave(value: unknown): InvestigationSave {
   if (!Array.isArray(value.history) || value.history.length > 100 || value.history.some((entry) => !object(entry) || !sources.includes(String(entry.sourceId)) || typeof entry.query !== "string" || entry.query.length > 10000)) throw new Error("保存された検索履歴が不正です。");
   const board = value.schemaVersion === 1 ? emptyBoard() : validateBoard(value.board, evidenceIds);
   const story = value.schemaVersion >= 3 ? validateStory(value.story) : advanceStory(emptyStory(), { discoveredIds, evidenceIds, board });
-  const theory = value.schemaVersion === 4 ? validateTheory(value.theory, evidenceIds) : emptyTheory();
+  const theory = value.schemaVersion >= 4 ? validateTheory(value.theory, evidenceIds) : emptyTheory();
   return { ...emptySave(), discoveredIds, evidenceIds, board, story, theory, history: value.history.map((entry) => ({ sourceId: entry.sourceId as SourceId, query: entry.query as string })) };
 }
 

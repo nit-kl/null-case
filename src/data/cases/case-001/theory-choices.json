@@ -1,0 +1,85 @@
+{
+  "culprit": {
+    "unlockAny": [
+      "E-case-001-hotel-case_documents-H-M704",
+      "E-case-001-camera-camera_events-C-M701"
+    ],
+    "options": [
+      {
+        "id": "c01",
+        "label": "雨宮蓮"
+      },
+      {
+        "id": "c02",
+        "label": "神代誠司"
+      },
+      {
+        "id": "c03",
+        "label": "佐伯美咲"
+      },
+      {
+        "id": "c04",
+        "label": "加賀美透"
+      }
+    ]
+  },
+  "motive": {
+    "unlockAny": [
+      "E-case-001-hotel-case_documents-H-M701",
+      "E-case-001-hotel-case_documents-H-M702"
+    ],
+    "options": [
+      {
+        "id": "m01",
+        "label": "金銭を奪うため"
+      },
+      {
+        "id": "m02",
+        "label": "私的な怨恨"
+      },
+      {
+        "id": "m03",
+        "label": "回収を妨害し、自身の無許可廃棄を隠すため"
+      }
+    ]
+  },
+  "method": {
+    "unlockAny": [
+      "E-case-001-access-controller_logs-A-M701",
+      "E-case-001-access-admin_audit-A-M702"
+    ],
+    "options": [
+      {
+        "id": "w01",
+        "label": "特別権限で入室し、通常アクセスログを削除"
+      },
+      {
+        "id": "w02",
+        "label": "宿泊客のカードを盗み、映像だけを削除"
+      },
+      {
+        "id": "w03",
+        "label": "鍵を使わず侵入し、全ソースを一括改変"
+      }
+    ]
+  },
+  "time": {
+    "unlockAny": [
+      "E-case-001-hotel-case_documents-H-M703"
+    ],
+    "options": [
+      {
+        "id": "t01",
+        "label": "22:10〜22:20"
+      },
+      {
+        "id": "t02",
+        "label": "22:40〜22:50"
+      },
+      {
+        "id": "t03",
+        "label": "22:30〜22:40（UTC+09:00）"
+      }
+    ]
+  }
+}

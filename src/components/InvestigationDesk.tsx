@@ -148,7 +148,7 @@ export function InvestigationDesk() {
 
       {ready && <StoryLog story={save.story} onRead={(id) => setSave((current) => ({ ...current, story: markStoryRead(current.story, id) }))} />}
       {ready && <CaseBoard board={save.board} evidence={evidence} onChange={(board) => setSave((current) => ({ ...current, board }))} />}
-      {ready && <CaseTheory theory={save.theory} evidence={evidence} onChange={(theory) => setSave((current) => ({ ...current, theory }))} />}
+      {ready && <CaseTheory theory={save.theory} evidence={evidence} onChange={(theory) => setSave((current) => ({ ...current, theory }))} onEvaluation={(id, evaluation) => setSave((current) => ({ ...current, theory: { ...current.theory, submissions: current.theory.submissions.map((entry) => entry.id === id ? { ...entry, evaluation } : entry) } }))} />}
       <footer><span>SYSTEM ONLINE</span><span>HOTEL ARGOS / 2026.10.14 / 23:41</span><button onClick={() => setBriefingOpen(true)}>事件概要</button></footer>
 
       {briefingOpen && <div className="modalBackdrop"><section className="briefing"><small>INVESTIGATION BRIEF / 001</small><h1>{briefing.title}</h1><p>{briefing.body}</p><p className="quote">{briefing.quote}</p><button onClick={() => setBriefingOpen(false)}>捜査を開始する</button></section></div>}

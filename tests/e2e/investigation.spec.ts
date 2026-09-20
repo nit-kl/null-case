@@ -20,7 +20,7 @@ test("six sources retain M01 and share evidence on desktop and mobile", async ({
 
   await source("CAMERA"); await run();
   await expect(page.locator(".error")).toHaveCount(0);
-  await expect(page.locator(".cameraTimeline li")).toHaveCount(4);
+  await expect(page.locator(".cameraTimeline li")).toHaveCount(5);
   await page.getByLabel("人物タグ", { exact: true }).selectOption("dark_coat");
   await run(); await expect(page.locator(".cameraTimeline li")).toHaveCount(2);
   await pin(); await fits();

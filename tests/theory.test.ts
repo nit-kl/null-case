@@ -61,7 +61,7 @@ describe("save v4", () => {
   it.each([1, 2, 3])("migrates v%s progress with an empty draft", (version) => {
     const old = { ...emptySave(), schemaVersion: version, discoveredIds: [id], evidenceIds: [id] };
     const save = migrateSave(old);
-    expect(save.schemaVersion).toBe(4);
+    expect(save.schemaVersion).toBe(5);
     expect(save.evidenceIds).toEqual([id]);
     expect(save.theory).toEqual(emptyTheory());
     expect(save.board).toEqual(old.board);

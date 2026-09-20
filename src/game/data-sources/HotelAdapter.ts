@@ -1,4 +1,5 @@
 import hotelData from "../../data/cases/case-001/hotel.json";
+import extra from "../../data/cases/case-001/supplemental.json";
 import { executeQuery } from "../query-engine/queryEngine";
 import type { DataTable } from "../../types/game";
 import { withCandidates, type DataSourceAdapter } from "./DataSourceAdapter";
@@ -12,7 +13,7 @@ export class HotelAdapter implements DataSourceAdapter {
     "SELECT * FROM room_notes WHERE room_number = 404;",
     "SELECT guest_name, room_number FROM reservations;",
   ];
-  constructor(private readonly tables: DataTable[] = hotelData.tables) {}
+  constructor(private readonly tables: DataTable[] = [...hotelData.tables, ...extra.hotelTables]) {}
   get schema() {
     return this.tables.map((table) => ({ name: table.name, columns: Object.keys(table.rows[0] ?? {}), query: `SELECT * FROM ${table.name};` }));
   }

@@ -1,4 +1,5 @@
 import data from "../../data/cases/case-001/staff.json";
+import extra from "../../data/cases/case-001/supplemental.json";
 import type { DataRow } from "../../types/game";
 import { withCandidates, type DataSourceAdapter, type SourceControl } from "./DataSourceAdapter";
 import { recordResult } from "./filterQuery";
@@ -9,7 +10,7 @@ export class StaffAdapter implements DataSourceAdapter {
   readonly label = "STAFF DB";
   readonly presets = [JSON.stringify({ node_id: "S-01" })];
   readonly schema = [{ name: "staff_relations", columns: ["person_id", "person_name", "relation", "target_id", "target_label"], query: this.presets[0] }];
-  constructor(private readonly records: DataRow[] = data.records) {}
+  constructor(private readonly records: DataRow[] = [...data.records, ...extra.staffRecords]) {}
   get controls(): SourceControl[] {
     const nodes = new Map<string, string>();
     for (const row of this.records) {
