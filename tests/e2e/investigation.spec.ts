@@ -62,4 +62,17 @@ test("six sources retain M01 and share evidence on desktop and mobile", async ({
   await run(); await expect(page.getByRole("button", { name: "登録済み", exact: true })).toBeDisabled();
   await expect(page.locator(".evidenceCard")).toHaveCount(6);
   expect(errors).toEqual([]);
+  await expect(page.locator(".saveStatus")).toContainText("保存済み");
+  await page.reload();
+  await page.getByRole("button", { name: "捜査を開始する" }).click();
+  await expect(page.locator(".evidenceCard")).toHaveCount(6);
+  await page.locator(".evidenceCard").first().getByText("証拠の詳細", { exact: true }).click();
+  await expect(page.locator(".evidenceCard").first().locator("dd").filter({ hasText: "長期停止区画。支配人承認なしで入室禁止" })).toBeVisible();
+  await page.getByRole("button", { name: /^Q3:/ }).click();
+  await run();
+  await expect(page.getByRole("button", { name: "登録済み", exact: true })).toBeDisabled();
+  await page.locator(".queryHistory summary").click();
+  await expect(page.locator(".queryHistory")).toContainText("CAMERA DB");
+  await fits();
+  expect(errors).toEqual([]);
 });

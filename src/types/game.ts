@@ -17,6 +17,7 @@ export interface QueryResult {
 }
 
 export interface Evidence {
+  tags?: string[];
   id: string;
   title: string;
   source: string;

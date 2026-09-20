@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "caseId": "case-001",
+  "defaultUnlockWhen": "recordReturned",
+  "definitions": [
+    { "source": "hotel.room_notes.N-882", "title": "404号室の運用メモ", "unlockWhen": "recordReturned", "tags": ["404号室", "運用記録"] },
+    { "source": "access.access_logs.A-002", "title": "404号室の入室拒否ログ", "unlockWhen": "recordReturned", "tags": ["404号室", "入退室"] },
+    { "source": "payment.transactions.P-002", "title": "404号室の取引キャッシュ", "unlockWhen": "recordReturned", "tags": ["404号室", "取引記録"] }
+  ]
+}

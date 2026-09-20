@@ -74,3 +74,16 @@ select:focus-visible { outline:2px solid var(--cyan); outline-offset:2px; }
 .staffGraph { padding:14px; display:grid; gap:12px; }
 .staffEdge { display:flex; flex-wrap:wrap; align-items:center; gap:8px; font-size:12px; }
 .staffEdge button { padding:10px; border:1px solid var(--line); background:#102225; color:var(--cyan); }
+.saveStatus { margin:12px; font-size:11px; line-height:1.7; color:var(--muted); overflow-wrap:anywhere; }
+.evidenceCard details { margin-top:12px; font-size:12px; }
+summary { cursor:pointer; color:var(--cyan); }
+summary:focus-visible { outline:2px solid var(--cyan); outline-offset:3px; }
+.evidenceCard dl { margin:12px 0 0; }
+.evidenceCard dl div { border-top:1px solid var(--line); padding:7px 0; }
+.evidenceCard dt { color:var(--muted); font:11px ui-monospace,monospace; }
+.evidenceCard dd { margin:4px 0 0; white-space:pre-wrap; overflow-wrap:anywhere; }
+.evidenceTags { padding-top:10px; }
+.queryHistory { margin:12px; font-size:12px; }
+.queryHistory ol { padding-left:20px; max-height:300px; overflow:auto; }
+.queryHistory li { margin-top:12px; }
+.queryHistory pre { white-space:pre-wrap; overflow-wrap:anywhere; font-size:11px; color:var(--muted); }
